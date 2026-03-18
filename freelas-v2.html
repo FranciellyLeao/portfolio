@@ -306,17 +306,52 @@ function salvarAlteracao() {
 function togglePago(id) {
     const frela = freelas.find(f => f.id === id);
     if (frela) {
-        frela.pago = !frela.pago;
-        
-        const agora = new Date().toISOString();
-        const novaVersao = frela.historico.length + 1;
-        
-        frela.historico.push({
-            versao: novaVersao,
-            data: agora,
-            acao: frela.pago ? 'Marcado como Pago' : 'Marcado como Pendente',
-            detalhes: frela.pago ? '💰 Pagamento confirmado' : '⏳ Aguardando pagamento'
-        });
+        // Se é recorrente, adiciona ao histórico de pagamentos mensais
+        if (frela.recorrente) {
+            if (!frela.pagamentosMensais) {
+                frela.pagamentosMensais = [];
+            }
+            
+            const agora = new Date();
+            const mesAno = `${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()}`;
+            
+            // Verifica se já existe pagamento pra este mês
+            const pagamentoExistente = frela.pagamentosMensais.find(p => p.mesAno === mesAno);
+            
+            if (pagamentoExistente) {
+                // Remove o pagamento do mês
+                frela.pagamentosMensais = frela.pagamentosMensais.filter(p => p.mesAno !== mesAno);
+            } else {
+                // Adiciona novo pagamento
+                frela.pagamentosMensais.push({
+                    mesAno: mesAno,
+                    data: agora.toISOString(),
+                    valor: frela.preco
+                });
+            }
+            
+            const agora2 = new Date().toISOString();
+            const novaVersao = frela.historico.length + 1;
+            frela.historico.push({
+                versao: novaVersao,
+                data: agora2,
+                acao: 'Pagamento Mensal',
+                detalhes: pagamentoExistente ? `❌ Pagamento de ${mesAno} removido` : `✓ Pagamento de ${mesAno} registrado - R$ ${frela.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
+            });
+        } else {
+            // Para não-recorrentes, funciona normal
+            frela.pago = !frela.pago;
+            
+            const agora = new Date().toISOString();
+            const novaVersao = frela.historico.length + 1;
+            
+            frela.historico.push({
+                versao: novaVersao,
+                data: agora,
+                acao: frela.pago ? 'Marcado como Pago' : 'Marcado como Pendente',
+                detalhes: frela.pago ? '💰 Pagamento confirmado' : '⏳ Aguardando pagamento'
+            });
+        }
         
         saveData();
         render();
@@ -524,11 +559,11 @@ function render() {
                         </div>
 
                         <div class="lg:col-span-2 flex gap-2 justify-end flex-wrap">
-                            <button onclick="togglePago(${frela.id})" class="flex items-center gap-1 px-4 py-2 rounded-lg transition font-bold text-sm ${frela.pago ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50' : 'bg-gray-900 text-gray-500 border border-gray-800'}">
+                            <button onclick="togglePago(${frela.id})" class="flex items-center gap-1 px-4 py-2 rounded-lg transition font-bold text-sm ${frela.recorrente ? (frela.pagamentosMensais && frela.pagamentosMensais.length > 0 ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50' : 'bg-gray-900 text-gray-500 border border-gray-800') : (frela.pago ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50' : 'bg-gray-900 text-gray-500 border border-gray-800')}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                ${frela.pago ? 'Pago' : 'Pendente'}
+                                ${frela.recorrente ? (frela.pagamentosMensais && frela.pagamentosMensais.length > 0 ? `${frela.pagamentosMensais.length} Pago` : 'Marcar Pago') : (frela.pago ? 'Pago' : 'Pendente')}
                             </button>
 
                             <button onclick="toggleNota(${frela.id})" class="flex items-center gap-1 px-4 py-2 rounded-lg transition font-bold text-sm ${frela.notaEmitida ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-gray-900 text-gray-500 border border-gray-800'}">
@@ -582,6 +617,18 @@ function render() {
                 </div>
 
                 <div id="historico-${frela.id}" class="hidden border-t border-gray-800 bg-gray-950 p-6">
+                    ${frela.recorrente && frela.pagamentosMensais && frela.pagamentosMensais.length > 0 ? `
+                        <h3 class="text-sm font-bold text-green-400 mb-4">💳 Pagamentos Mensais</h3>
+                        <div class="space-y-2 mb-6 pb-6 border-b border-gray-700">
+                            ${frela.pagamentosMensais.map((pag, idx) => `
+                                <div class="bg-black border border-gray-800 rounded-lg p-2 flex items-center justify-between">
+                                    <span class="text-sm font-bold text-gray-300">${pag.mesAno}</span>
+                                    <span class="text-sm text-green-400">R$ ${pag.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
                     <h3 class="text-sm font-bold text-blue-400 mb-4">📜 Histórico de Alterações</h3>
                     <div class="space-y-3 max-h-96 overflow-y-auto">
                         ${frela.historico.map((h, hIdx) => `
