@@ -1009,121 +1009,7 @@
       border-radius: 2px;
     }
 
-    @media (max-width: 1080px) {
-      .hero-shell {
-        grid-template-columns: 1fr;
-      }
 
-      .about-intro,
-      .insights-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .services-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .tools-section {
-        grid-template-columns: 1fr;
-      }
-
-      .projects-head {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .nav-list, .btn-outline {
-        display: none;
-      }
-
-      .menu-toggle {
-        display: flex;
-      }
-
-      header {
-        width: 95%;
-        border-radius: 24px;
-      }
-
-      .nav-list.active {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 80px;
-        left: 0;
-        width: 100%;
-        background: var(--bg-dark);
-        padding: 2rem;
-        border-radius: 24px;
-        border: 1px solid var(--card-border);
-        text-align: center;
-      }
-
-      .hero {
-        padding-top: 10rem;
-      }
-
-      .hero-content {
-        text-align: center;
-      }
-
-      .service-card {
-        min-height: auto;
-      }
-
-      .tools-info-card,
-      .tools-software-card {
-        padding: 2rem;
-      }
-
-      .software-grid {
-        grid-template-columns: repeat(3, minmax(64px, 1fr));
-        gap: 1rem;
-        width: 100%;
-      }
-
-      .software-box {
-        width: 100%;
-        height: 76px;
-        font-size: 1.45rem;
-      }
-
-      .timeline-top {
-        flex-direction: column;
-      }
-
-      .timeline-stack {
-        padding-left: 2.8rem;
-      }
-
-      .timeline-node {
-        left: -2.35rem;
-      }
-
-      .about-photo-wrap {
-        padding: 1rem 0;
-      }
-
-      .photo-chip {
-        font-size: 0.8rem;
-      }
-
-      .photo-chip.top-right,
-      .photo-chip.middle-right {
-        right: 0;
-      }
-
-      .project-card {
-        width: 300px;
-        flex-basis: 300px;
-      }
-
-      .services-grid {
-        grid-template-columns: 1fr;
-      }
-    }
     /* ── Gradiente reutilizável ── */
     .grad-text {
       background: linear-gradient(135deg, var(--cor-teal), var(--cor-purple), var(--cor-red), var(--cor-orange));
@@ -1506,10 +1392,7 @@
       transform: translateY(0);
     }
 
-    @media (max-width: 768px) {
-      .metodo-circles { flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
-      .metodo-connector { display: none; }
-    }
+
 
     /* ── Banner Behance ── */
     .behance-banner {
@@ -1632,6 +1515,159 @@
 
     @media (max-width: 1080px) {
       .processo-wrap { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════
+       RESPONSIVE — TABLET (≤1080px)
+    ════════════════════════════════ */
+    @media (max-width: 1080px) {
+      .hero-shell { grid-template-columns: 1fr; }
+      .about-intro { grid-template-columns: 1fr; }
+      .insights-grid { grid-template-columns: repeat(2, 1fr); }
+      .services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tools-section { grid-template-columns: 1fr; }
+      .projects-head { flex-direction: column; align-items: flex-start; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .metodo-circles { gap: 0; }
+      .behance-banner { aspect-ratio: 16 / 7; }
+    }
+
+    /* ════════════════════════════════
+       RESPONSIVE — MOBILE (≤768px)
+    ════════════════════════════════ */
+    @media (max-width: 768px) {
+
+      /* NAV */
+      .nav-list, .btn-outline { display: none; }
+      .menu-toggle { display: flex; }
+
+      header {
+        width: 95%;
+        border-radius: 20px;
+        padding: 0.85rem 1.25rem;
+        top: 16px;
+      }
+
+      .nav-list.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 72px;
+        left: 0;
+        width: 100%;
+        background: rgba(10,10,12,0.97);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid var(--card-border);
+        text-align: center;
+        gap: 1.2rem;
+        z-index: 999;
+      }
+
+      .nav-list.active a { font-size: 1.05rem; }
+
+      /* HERO */
+      .hero { padding: 8rem 1.25rem 3rem; min-height: auto; }
+      .hero h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); letter-spacing: -1px; margin-bottom: 1.5rem; }
+      .hero-buttons { flex-direction: column; align-items: center; gap: 0.75rem; }
+      .btn-portfolio, .btn-primary, .btn-secondary {
+        width: 100%; max-width: 320px; text-align: center;
+        padding: 0.9rem 1.5rem; font-size: 1rem;
+      }
+
+      /* SECTIONS */
+      section { padding: 3.5rem 1.25rem; }
+      .section-title { font-size: 1.9rem; letter-spacing: -0.5px; }
+      .sobre-text { font-size: 1rem; }
+
+      /* SOBRE / FOTO */
+      .about-intro { grid-template-columns: 1fr; gap: 2rem; }
+      .about-photo-wrap { padding: 1.5rem 0.5rem; }
+      .about-photo-card { min-height: 360px; }
+      .photo-chip { font-size: 0.72rem; padding: 0.45rem 0.7rem; }
+      .photo-chip.top-left  { top: 0.2rem; left: 0; }
+      .photo-chip.top-right { top: 0.8rem; right: 0; }
+      .photo-chip.middle-right { right: 0; }
+      .photo-chip.bottom-left  { left: 0; bottom: 0.8rem; }
+
+      /* SERVIÇOS */
+      .services-layout { gap: 3rem; }
+      .services-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .service-card { min-height: auto; padding: 1.75rem 1.5rem; }
+
+      /* BEHANCE BANNER */
+      .behance-banner { aspect-ratio: 16 / 9; border-radius: 16px; }
+      .behance-banner-label { font-size: 0.88rem; }
+      .behance-banner-overlay { padding: 0 1.25rem; }
+
+      /* TOOLS */
+      .tools-section { grid-template-columns: 1fr; gap: 2rem; }
+      .tools-info-card { padding: 1.75rem 1.5rem; }
+      .software-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 76px);
+        gap: 0.75rem; width: 100%;
+      }
+      .software-box { width: 100%; height: 76px; font-size: 1.3rem; border-radius: 16px; }
+
+      /* METODOLOGIA */
+      .metodo-circles { flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
+      .metodo-connector { display: none; }
+      .metodo-circle { flex: 0 0 auto; width: 80px; }
+      .metodo-circle:nth-child(1) .metodo-circle-ring,
+      .metodo-circle:nth-child(3) .metodo-circle-ring,
+      .metodo-circle:nth-child(5) .metodo-circle-ring,
+      .metodo-circle:nth-child(7) .metodo-circle-ring,
+      .metodo-circle:nth-child(9) .metodo-circle-ring {
+        width: 60px !important; height: 60px !important; font-size: 0.7rem !important;
+      }
+
+      /* PROCESSO CRIATIVO */
+      .processo-wrap { grid-template-columns: 1fr; gap: 2rem; padding: 1.75rem 1.5rem; }
+      .processo-gif {
+        width: calc(100% + 3rem);
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        margin-bottom: -1.75rem;
+      }
+
+      /* PROJETOS */
+      .projects-head { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+      .project-card { width: 260px; min-width: 260px; flex: 0 0 260px; }
+
+      /* DESTAQUES */
+      .insights-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .insight-card { padding: 1.1rem; }
+
+      /* TRAJETÓRIA */
+      .bento-grid { grid-template-columns: 1fr; }
+      .card-large { grid-column: span 1 !important; }
+      .acc-summary { gap: 0.6rem; padding: 1rem 0.25rem; }
+      .acc-role { font-size: 0.9rem; }
+      .acc-company { font-size: 0.76rem; }
+      .timeline-date { font-size: 0.72rem !important; padding: 0.3rem 0.55rem !important; white-space: nowrap; }
+
+      /* CARDS */
+      .card { padding: 1.75rem 1.5rem; }
+
+      /* CONTATO */
+      .contact-row { flex-direction: column; align-items: center; gap: 0.75rem; }
+      .contact-info a, .contact-info span { font-size: 0.92rem; }
+
+      /* FOOTER */
+      footer { padding: 2.5rem 1.25rem; font-size: 0.85rem; }
+    }
+
+    /* ════════════════════════════════
+       RESPONSIVE — SMALL (≤480px)
+    ════════════════════════════════ */
+    @media (max-width: 480px) {
+      .hero h1 { font-size: clamp(1.9rem, 10vw, 2.6rem); }
+      .insights-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 1.6rem; }
+      .sobre-text { font-size: 0.95rem; }
+      .behance-banner-label { font-size: 0.78rem; }
     }
 
   </style>
