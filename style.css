@@ -1,0 +1,305 @@
+/* =========================================
+   1. Configurações Globais
+   ========================================= */
+* {
+  box-sizing: border-box; /* Impede que elementos vazem da tela */
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth; /* Rolagem suave ao clicar no menu */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+  background-color: #0d0d0d;
+}
+
+/* =========================================
+   2. Cabeçalho e Menu
+   ========================================= */
+header {
+  background-color: #111;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative; /* Necessário para o menu mobile */
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00f3ff;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-list a {
+  color: #00f3ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.nav-list a:hover {
+  color: #fff;
+}
+
+/* =========================================
+   3. Seções Principais (Hero, Sobre, etc)
+   ========================================= */
+.hero {
+  background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+  color: #00f3ff;
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #ccc;
+}
+
+.btn {
+  background-color: #00f3ff;
+  color: #0d0d0d;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  display: inline-block;
+}
+
+.btn:hover {
+  background-color: #00e0e0;
+  transform: scale(1.05);
+}
+
+.sobre, .projetos, .contato {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #00f3ff;
+}
+
+/* =========================================
+   4. Novas Seções (Tecnologias e Experiência)
+   ========================================= */
+.tecnologias {
+  padding: 4rem 2rem;
+  text-align: center;
+  background-color: #111; /* Fundo diferente para dar contraste */
+}
+
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tech-badge {
+  background-color: #1a1a1a;
+  color: #00f3ff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  border: 1px solid #00f3ff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.tech-badge:hover {
+  background-color: #00f3ff;
+  color: #0d0d0d;
+}
+
+.experiencias {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.timeline {
+  max-width: 600px;
+  margin: 2rem auto 0;
+  text-align: left;
+  border-left: 2px solid #00f3ff;
+  padding-left: 1.5rem;
+}
+
+.timeline-item {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-color: #00f3ff;
+  border-radius: 50%;
+  position: absolute;
+  left: -1.95rem; /* Posiciona a bolinha em cima da linha */
+  top: 5px;
+}
+
+.timeline-item h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.timeline-item span {
+  color: #00f3ff;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+/* =========================================
+   5. Projetos e Contato
+   ========================================= */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 243, 255, 0.2);
+}
+
+.project-card h3 {
+  color: #00f3ff;
+  margin-bottom: 1rem;
+}
+
+form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 1rem;
+  margin: 0.5rem 0 1rem;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-family: inherit;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #00f3ff; /* Borda acende ao clicar */
+}
+
+button[type="submit"] {
+  background-color: #00f3ff;
+  color: #0d0d0d;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.3s;
+  width: 100%;
+}
+
+button[type="submit"]:hover {
+  background-color: #00e0e0;
+}
+
+/* =========================================
+   6. Rodapé
+   ========================================= */
+footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: #111;
+  color: #888;
+}
+
+/* =========================================
+   7. Responsividade e Menu Mobile
+   ========================================= */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.menu-toggle .bar {
+  height: 3px;
+  width: 25px;
+  background-color: #00f3ff;
+  transition: 0.3s;
+}
+
+/* Telas de Celular (menores que 768px) */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+  
+  .nav-list {
+    display: none; /* Esconde o menu original */
+    flex-direction: column;
+    width: 100%;
+    background-color: #111;
+    position: absolute;
+    top: 100%; /* Fica logo abaixo do header */
+    left: 0;
+    padding: 1rem 0;
+    text-align: center;
+    border-top: 1px solid #1a1a1a;
+    z-index: 999; /* Garante que o menu fique por cima de tudo */
+  }
+  
+  .nav-list.active {
+    display: flex;
+  }
+  
+  .nav-list li {
+    margin: 1rem 0;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+}
