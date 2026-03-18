@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Orçamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif !important; }
+        .gradient-text {
+            background: linear-gradient(135deg, #14b8a6 0%, #a855f7 50%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+<div class="min-h-screen bg-black text-white">
+    <!-- Header -->
+    <div class="border-b border-gray-800 bg-black sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="p-3 hover:bg-gray-900 rounded-2xl transition text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-3xl font-bold text-white">Calculadora de <span class="gradient-text">Orçamentos</span></h1>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="copyToClipboard()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-2xl hover:shadow-lg transition font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copiar
+                    </button>
+                    <button onclick="exportOrcamento()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-2xl hover:shadow-lg transition font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Exportar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        
+        <!-- Cliente e Escopo -->
+        <div class="bg-black border border-gray-800 rounded-2xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-6">Detalhes do Projeto</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Nome do Cliente</label>
+                    <input type="text" id="clientName" placeholder="Nome da empresa" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" onchange="saveOrcamento()" />
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Data</label>
+                    <input type="text" value="${new Date().toLocaleDateString('pt-BR')}" disabled class="w-full bg-gray-950 border border-gray-800 text-gray-500 px-4 py-3 rounded-lg font-medium" />
+                </div>
+            </div>
+
+            <div>
+                <label class="text-sm text-gray-500 font-bold mb-2 block">Escopo do Projeto</label>
+                <textarea id="escopo" placeholder="Descreva o que será entregue..." class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20" onchange="saveOrcamento()"></textarea>
+            </div>
+        </div>
+
+        <!-- Prazos e Condições -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="bg-black border border-gray-800 rounded-2xl p-6">
+                <label class="text-sm text-gray-500 font-bold mb-3 block">📅 Prazo de Entrega</label>
+                <input type="date" id="prazo" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" onchange="saveOrcamento()" />
+            </div>
+
+            <div class="bg-black border border-gray-800 rounded-2xl p-6">
+                <label class="text-sm text-gray-500 font-bold mb-3 block">📦 Data de Entrega</label>
+                <input type="date" id="entrega" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" onchange="saveOrcamento()" />
+            </div>
+
+            <div class="bg-black border border-gray-800 rounded-2xl p-6">
+                <label class="text-sm text-gray-500 font-bold mb-3 block">⚙️ Condições</label>
+                <input type="text" id="condicoes" placeholder="Ex: 50% adiantado, 50% na entrega" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" onchange="saveOrcamento()" />
+            </div>
+        </div>
+
+        <!-- Adicionar Serviço -->
+        <div class="bg-black border border-gray-800 rounded-2xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Adicionar Serviço</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Serviço</label>
+                    <input type="text" id="serviceInput" placeholder="Digite o serviço..." class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Valor (R$)</label>
+                    <input type="number" id="priceInput" placeholder="0,00" min="0" step="0.01" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Quantidade</label>
+                    <input type="number" id="qtyInput" placeholder="1" min="1" value="1" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                </div>
+
+                <div class="flex items-end">
+                    <button onclick="addItem()" class="w-full px-6 py-3 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-lg hover:shadow-lg transition font-bold flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Itens -->
+        <div id="itemsContainer"></div>
+
+        <!-- Resumo Financeiro -->
+        <div id="summaryContainer"></div>
+    </div>
+</div>
+
+<script>
+let items = [];
+
+function loadOrcamento() {
+    const saved = localStorage.getItem('orcamentoDataV2');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            items = data.items || [];
+            document.getElementById('clientName').value = data.clientName || '';
+            document.getElementById('escopo').value = data.escopo || '';
+            document.getElementById('prazo').value = data.prazo || '';
+            document.getElementById('entrega').value = data.entrega || '';
+            document.getElementById('condicoes').value = data.condicoes || '';
+        } catch (e) {
+            console.error('Erro:', e);
+        }
+    }
+    render();
+}
+
+function saveOrcamento() {
+    localStorage.setItem('orcamentoDataV2', JSON.stringify({
+        items,
+        clientName: document.getElementById('clientName').value,
+        escopo: document.getElementById('escopo').value,
+        prazo: document.getElementById('prazo').value,
+        entrega: document.getElementById('entrega').value,
+        condicoes: document.getElementById('condicoes').value
+    }));
+}
+
+function addItem() {
+    const service = document.getElementById('serviceInput').value;
+    const price = parseFloat(document.getElementById('priceInput').value) || 0;
+    const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+    
+    if (!service.trim() || price <= 0) {
+        alert('Preencha serviço e valor!');
+        return;
+    }
+
+    items.push({
+        id: Date.now(),
+        service,
+        price,
+        quantity: qty,
+        subtotal: price * qty
+    });
+
+    document.getElementById('serviceInput').value = '';
+    document.getElementById('priceInput').value = '';
+    document.getElementById('qtyInput').value = '1';
+
+    saveOrcamento();
+    render();
+}
+
+function removeItem(id) {
+    items = items.filter(i => i.id !== id);
+    saveOrcamento();
+    render();
+}
+
+function updateQuantity(id, newQty) {
+    const item = items.find(i => i.id === id);
+    if (item) {
+        item.quantity = newQty;
+        item.subtotal = item.price * newQty;
+        saveOrcamento();
+        render();
+    }
+}
+
+function copyToClipboard() {
+    const text = generateOrcamentoText();
+    navigator.clipboard.writeText(text);
+    alert('✓ Copiado para a área de transferência!');
+}
+
+function exportOrcamento() {
+    const text = generateOrcamentoText();
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `orcamento-${document.getElementById('clientName').value || 'cliente'}-${new Date().toISOString().split('T')[0]}.txt`;
+    link.click();
+}
+
+function generateOrcamentoText() {
+    const clientName = document.getElementById('clientName').value;
+    const escopo = document.getElementById('escopo').value;
+    const prazo = document.getElementById('prazo').value;
+    const entrega = document.getElementById('entrega').value;
+    const condicoes = document.getElementById('condicoes').value;
+    
+    let text = `ORÇAMENTO\n`;
+    if (clientName) text += `Cliente: ${clientName}\n`;
+    text += `Data: ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+    
+    if (escopo) text += `ESCOPO:\n${escopo}\n\n`;
+    
+    text += `ITENS:\n`;
+    items.forEach((item, idx) => {
+        text += `${idx + 1}. ${item.service} x${item.quantity} = R$ ${item.subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n`;
+    });
+
+    const totalBruto = items.reduce((acc, i) => acc + i.subtotal, 0);
+    const discount = parseFloat(document.getElementById('discount')?.value) || 0;
+    const discountValue = totalBruto * (discount / 100);
+    const totalLiquido = totalBruto - discountValue;
+
+    text += `\nTOTAL BRUTO: R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    if (discount > 0) {
+        text += `\nDESCONTO (${discount}%): -R$ ${discountValue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    }
+    text += `\nTOTAL FINAL: R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+    
+    if (prazo) text += `\n\nPRAZO: ${prazo}`;
+    if (entrega) text += `\nENTREGA: ${entrega}`;
+    if (condicoes) text += `\nCONDIÇÕES: ${condicoes}`;
+
+    return text;
+}
+
+function goBack() {
+    window.location.href = './index.html';
+}
+
+function render() {
+    const itemsContainer = document.getElementById('itemsContainer');
+    const summaryContainer = document.getElementById('summaryContainer');
+
+    if (items.length === 0) {
+        itemsContainer.innerHTML = '';
+        summaryContainer.innerHTML = '';
+        return;
+    }
+
+    itemsContainer.innerHTML = `
+        <div class="bg-black border border-gray-800 rounded-2xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Itens do Orçamento</h2>
+            <div class="space-y-3">
+                ${items.map((item, idx) => `
+                    <div class="bg-gray-950 border border-gray-800 rounded-lg p-4 flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-white font-bold">${idx + 1}. ${item.service}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${item.id}, parseInt(this.value))" class="w-16 bg-gray-900 border border-gray-700 text-white px-2 py-1 rounded text-sm focus:outline-none text-center font-medium" />
+                            <span class="text-gray-600">x</span>
+
+                            <div class="text-right min-w-40">
+                                <p class="text-gray-500 text-sm">R$ ${item.price.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                                <p class="gradient-text font-bold">${item.subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                            </div>
+
+                            <button onclick="removeItem(${item.id})" class="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition border border-red-500/30">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    const totalBruto = items.reduce((acc, i) => acc + i.subtotal, 0);
+    const discount = parseFloat(document.getElementById('discount')?.value) || 0;
+    const discountValue = totalBruto * (discount / 100);
+    const totalLiquido = totalBruto - discountValue;
+
+    summaryContainer.innerHTML = `
+        <div class="bg-black border border-teal-500/30 rounded-2xl p-6 space-y-4">
+            <h2 class="text-2xl font-bold text-white mb-6">Resumo Financeiro</h2>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+                    <span class="text-gray-400">SUBTOTAL</span>
+                    <span class="text-white font-bold">R$ ${totalBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-400">DESCONTO</span>
+                        <input type="number" id="discount" min="0" max="100" value="0" onchange="saveOrcamento(); render()" class="w-16 bg-gray-950 border border-gray-800 text-white px-2 py-1 rounded text-sm focus:outline-none text-center font-medium" />
+                        <span class="text-gray-400">%</span>
+                    </div>
+                    <span class="text-orange-500 font-bold">-R$ ${discountValue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t-2 border-teal-500/30 bg-teal-500/10 p-4 rounded-lg">
+                    <span class="gradient-text font-bold text-lg">TOTAL</span>
+                    <span class="gradient-text font-bold text-2xl">R$ ${totalLiquido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-800">
+                <p class="text-gray-500 font-bold text-sm mb-3">OPÇÕES DE PAGAMENTO:</p>
+                <div class="grid grid-cols-3 gap-3">
+                    ${[1, 2, 3].map(parcelas => `
+                        <div class="bg-gray-950 border border-gray-800 rounded-lg p-3 text-center">
+                            <p class="text-gray-500 text-xs mb-1">${parcelas}x</p>
+                            <p class="text-white font-bold">R$ ${(totalLiquido / parcelas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+loadOrcamento();
+</script>
+
+</body>
+</html>

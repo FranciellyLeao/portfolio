@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brief de Branding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif !important; }
+        .gradient-text {
+            background: linear-gradient(135deg, #14b8a6 0%, #a855f7 50%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+<div class="min-h-screen bg-black text-white">
+    <!-- Header -->
+    <div class="border-b border-gray-800 bg-black sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="p-3 hover:bg-gray-900 rounded-2xl transition text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-3xl font-bold text-white">Brief de <span class="gradient-text">Branding</span></h1>
+                </div>
+                <button onclick="exportBrief()" class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-2xl hover:shadow-lg transition font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Exportar
+                </button>
+            </div>
+            
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-500 font-bold">COMPLETUDE</span>
+                    <span class="text-sm font-bold gradient-text" id="percentComplete">0%</span>
+                </div>
+                <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 transition-all duration-300" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="max-w-4xl mx-auto px-6 py-8 space-y-4" id="contentContainer"></div>
+</div>
+
+<script>
+let briefData = {
+    empresa_nome: '',
+    empresa_segmento: '',
+    empresa_missao: '',
+    empresa_valores: '',
+    publico_idade: '',
+    publico_genero: '',
+    publico_descricao: '',
+    marca_objetivo: '',
+    marca_diferencial: '',
+    marca_personalidade: '',
+    tom_voz_tipo: 'profissional',
+    tom_voz_descricao: '',
+    cores_preferidas: '',
+    cores_evitar: '',
+    estilo_logo: '',
+    referencias: '',
+    concorrentes: '',
+    prazo: '',
+    orcamento: '',
+    observacoes: ''
+};
+
+function loadBrief() {
+    const saved = localStorage.getItem('brandingBriefV2');
+    if (saved) {
+        try {
+            briefData = JSON.parse(saved);
+        } catch (e) {
+            console.error('Erro:', e);
+        }
+    }
+    render();
+}
+
+function saveBrief() {
+    localStorage.setItem('brandingBriefV2', JSON.stringify(briefData));
+    updateProgress();
+}
+
+function updateInput(field, value) {
+    briefData[field] = value;
+    saveBrief();
+}
+
+function updateProgress() {
+    const filled = Object.values(briefData).filter(v => v && v !== '').length;
+    const total = Object.keys(briefData).length;
+    const percent = Math.round((filled / total) * 100);
+    document.getElementById('percentComplete').textContent = percent + '%';
+    document.getElementById('progressBar').style.width = percent + '%';
+}
+
+function exportBrief() {
+    const dataStr = JSON.stringify(briefData, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `brief-${briefData.empresa_nome || 'branding'}-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+}
+
+function goBack() {
+    window.location.href = './index.html';
+}
+
+function toggleSection(section) {
+    const elem = document.getElementById(section + '-section');
+    if (elem) {
+        elem.classList.toggle('hidden');
+    }
+}
+
+function render() {
+    const container = document.getElementById('contentContainer');
+    
+    container.innerHTML = `
+        <!-- EMPRESA -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('empresa')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">📋 Dados da Empresa</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="empresa-section" class="p-6 space-y-4">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Nome da Empresa</label>
+                    <input type="text" value="${briefData.empresa_nome}" onchange="updateInput('empresa_nome', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Segmento/Ramo de Atuação</label>
+                    <input type="text" value="${briefData.empresa_segmento}" onchange="updateInput('empresa_segmento', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Missão da Empresa</label>
+                    <textarea onchange="updateInput('empresa_missao', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.empresa_missao}</textarea>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Valores da Marca</label>
+                    <textarea onchange="updateInput('empresa_valores', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.empresa_valores}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÚBLICO-ALVO -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('publico')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">👥 Público-Alvo</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="publico-section" class="p-6 space-y-4 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Faixa Etária</label>
+                        <input type="text" value="${briefData.publico_idade}" onchange="updateInput('publico_idade', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" placeholder="Ex: 25-45 anos" />
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Gênero</label>
+                        <input type="text" value="${briefData.publico_genero}" onchange="updateInput('publico_genero', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Descrição do Público-Alvo</label>
+                    <textarea onchange="updateInput('publico_descricao', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.publico_descricao}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- MARCA -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('marca')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">🎯 Posicionamento da Marca</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="marca-section" class="p-6 space-y-4 hidden">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Objetivo Principal da Marca</label>
+                    <textarea onchange="updateInput('marca_objetivo', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.marca_objetivo}</textarea>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Diferencial/Proposta Única de Valor</label>
+                    <textarea onchange="updateInput('marca_diferencial', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.marca_diferencial}</textarea>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Personalidade da Marca (se fosse uma pessoa...)</label>
+                    <textarea onchange="updateInput('marca_personalidade', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.marca_personalidade}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOM DE VOZ -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('tom')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">🗣️ Tom de Voz</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="tom-section" class="p-6 space-y-4 hidden">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Tipo de Tom</label>
+                    <div class="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                        ${['profissional', 'casual', 'amigável', 'técnico', 'emocional', 'descontraído'].map(tipo => `
+                            <button onclick="updateInput('tom_voz_tipo', '${tipo}')" class="px-4 py-2 rounded-lg font-bold text-sm transition border ${briefData.tom_voz_tipo === tipo ? 'bg-teal-500 text-white border-teal-500' : 'bg-gray-950 text-gray-400 border-gray-800 hover:border-teal-500'}">
+                                ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Descrição do Tom</label>
+                    <textarea onchange="updateInput('tom_voz_descricao', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.tom_voz_descricao}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISUAL -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('visual')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">🎨 Identidade Visual</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="visual-section" class="p-6 space-y-4 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Cores Preferidas</label>
+                        <input type="text" value="${briefData.cores_preferidas}" onchange="updateInput('cores_preferidas', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Cores a Evitar</label>
+                        <input type="text" value="${briefData.cores_evitar}" onchange="updateInput('cores_evitar', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Estilo de Logo Desejado</label>
+                    <select onchange="updateInput('estilo_logo', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium">
+                        <option value="">Selecione...</option>
+                        <option value="abstrato" ${briefData.estilo_logo === 'abstrato' ? 'selected' : ''}>Abstrato</option>
+                        <option value="tipografico" ${briefData.estilo_logo === 'tipografico' ? 'selected' : ''}>Tipográfico</option>
+                        <option value="emblema" ${briefData.estilo_logo === 'emblema' ? 'selected' : ''}>Emblema</option>
+                        <option value="hibrido" ${briefData.estilo_logo === 'hibrido' ? 'selected' : ''}>Híbrido (símbolo + tipo)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Referências Visuais</label>
+                    <textarea onchange="updateInput('referencias', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.referencias}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- MERCADO -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('mercado')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">🎯 Análise de Mercado</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="mercado-section" class="p-6 space-y-4 hidden">
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Concorrentes Diretos</label>
+                    <textarea onchange="updateInput('concorrentes', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.concorrentes}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRONOGRAMA -->
+        <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
+            <button onclick="toggleSection('cronograma')" class="w-full px-6 py-4 flex items-center justify-between bg-gray-950 hover:bg-gray-900 transition">
+                <h2 class="text-xl font-bold text-white">⏰ Cronograma e Budget</h2>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </button>
+            
+            <div id="cronograma-section" class="p-6 space-y-4 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Prazo de Entrega</label>
+                        <input type="date" value="${briefData.prazo}" onchange="updateInput('prazo', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500 font-bold mb-2 block">Orçamento</label>
+                        <input type="text" value="${briefData.orcamento}" onchange="updateInput('orcamento', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" placeholder="Ex: R$ 2.000,00" />
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500 font-bold mb-2 block">Observações</label>
+                    <textarea onchange="updateInput('observacoes', this.value)" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium resize-none h-20">${briefData.observacoes}</textarea>
+                </div>
+            </div>
+        </div>
+
+        ${briefData.empresa_nome ? `
+            <div class="bg-black border border-teal-500/30 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-white mb-4">📄 Resumo do Brief</h2>
+                <div class="space-y-2 text-gray-400 text-sm">
+                    <p><span class="gradient-text font-bold">Empresa:</span> ${briefData.empresa_nome}</p>
+                    <p><span class="gradient-text font-bold">Segmento:</span> ${briefData.empresa_segmento}</p>
+                    <p><span class="gradient-text font-bold">Objetivo:</span> ${briefData.marca_objetivo}</p>
+                    <p><span class="gradient-text font-bold">Tom:</span> ${briefData.tom_voz_tipo}</p>
+                </div>
+            </div>
+        ` : ''}
+    `;
+
+    updateProgress();
+}
+
+loadBrief();
+</script>
+
+</body>
+</html>
