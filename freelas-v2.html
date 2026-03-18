@@ -6,6 +6,7 @@
     <title>Controle de Freelas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * { font-family: 'Poppins', sans-serif !important; }
         .gradient-text {
@@ -52,6 +53,50 @@
 
         <!-- Stats -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="statsContainer"></div>
+
+        <!-- Card de Notificações -->
+        <div id="card-notificacoes" class="bg-gradient-to-r from-teal-500/10 via-purple-500/10 to-red-500/10 border border-teal-500/30 rounded-2xl p-6">
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">🔔 Configurar Notificações</h3>
+                    <p class="text-sm text-gray-400">Receba alertas por email e notificações do navegador</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-xs text-gray-500 font-bold mb-2 block">Seu Email</label>
+                        <input type="email" id="seu-email" placeholder="seu@email.com" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 font-bold mb-2 block">EmailJS Public Key</label>
+                        <input type="text" id="emailjs-key" placeholder="Sua Public Key do EmailJS" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 font-bold mb-2 block">EmailJS Service ID</label>
+                        <input type="text" id="emailjs-service" placeholder="Seu Service ID" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-gray-500 font-bold mb-2 block">EmailJS Template ID</label>
+                        <input type="text" id="emailjs-template" placeholder="Seu Template ID" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button onclick="salvarConfiguracoesEmail()" class="flex-1 px-6 py-2 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-lg hover:shadow-lg transition font-bold">
+                            ✓ Salvar
+                        </button>
+                        <button onclick="habilitarNotificacoes()" class="flex-1 px-6 py-2 bg-gray-900 text-gray-400 rounded-lg hover:bg-gray-800 transition font-bold">
+                            🔔 Navegador
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-600">
+                    <strong>Como configurar:</strong> 1. Crie conta em <a href="https://www.emailjs.com" target="_blank" class="text-teal-400 hover:underline">emailjs.com</a> 2. Pegue suas credenciais 3. Cole aqui
+                </p>
+            </div>
+        </div>
 
         <!-- Form -->
         <div class="bg-black border border-gray-800 rounded-2xl p-6">
@@ -138,14 +183,82 @@
     </div>
 </div>
 
+<!-- Modal de Data Nota -->
+<div id="modal-nota" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-black border border-gray-800 rounded-2xl max-w-md w-full p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-white">Agendar Emissão da Nota</h2>
+        
+        <div>
+            <label class="text-sm text-gray-500 font-bold mb-2 block">📅 Data de Emissão</label>
+            <input type="date" id="data-nota" class="w-full bg-gray-950 border border-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-teal-500 font-medium" />
+        </div>
+
+        <p class="text-xs text-gray-600">Você será notificado quando a data se aproximar (7 dias antes)</p>
+
+        <div class="flex gap-3">
+            <button onclick="fecharNotaModal()" class="flex-1 px-4 py-3 bg-gray-900 text-gray-400 rounded-lg hover:bg-gray-800 transition font-bold">
+                Cancelar
+            </button>
+            <button onclick="salvarDataNota()" class="flex-1 px-4 py-3 bg-gradient-to-r from-teal-500 via-purple-500 to-red-500 text-white rounded-lg hover:shadow-lg transition font-bold">
+                ✓ Agendar
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 let freelas = [];
 let pricesNotes = '';
 let frelaSelecionada = null;
+let frelaNota = null;
 let abaAtual = 'ativos';
 
+function salvarConfiguracoesEmail() {
+    const seuEmail = document.getElementById('seu-email').value;
+    const publicKey = document.getElementById('emailjs-key').value;
+    const serviceId = document.getElementById('emailjs-service').value;
+    const templateId = document.getElementById('emailjs-template').value;
+    
+    if (!seuEmail || !publicKey || !serviceId || !templateId) {
+        alert('Preencha todos os campos!');
+        return;
+    }
+    
+    const config = {
+        seuEmail,
+        publicKey,
+        serviceId,
+        templateId
+    };
+    
+    localStorage.setItem('configEmailJS', JSON.stringify(config));
+    alert('✓ Configurações salvas! Você receberá emails quando faltar 7 dias pra emitir a nota.');
+    document.getElementById('card-notificacoes').style.display = 'none';
+    checkNotificacoes();
+}
+
+function habilitarNotificacoes() {
+    if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+            alert('✓ Notificações do navegador já estão ativadas!');
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('✓ Notificações Ativadas!', {
+                        body: 'Você receberá alertas sobre as datas de emissão de notas',
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">✓</text></svg>'
+                    });
+                    checkNotificacoes();
+                }
+            });
+        }
+    } else {
+        alert('Seu navegador não suporta notificações');
+    }
+}
+
 function loadData() {
-    const saved = localStorage.getItem('freelasDataV5');
+    const saved = localStorage.getItem('freelasDataV6');
     if (saved) {
         try {
             const data = JSON.parse(saved);
@@ -156,12 +269,95 @@ function loadData() {
             console.error('Erro:', e);
         }
     }
+    
+    const configEmail = localStorage.getItem('configEmailJS');
+    if (configEmail) {
+        const config = JSON.parse(configEmail);
+        document.getElementById('seu-email').value = config.seuEmail;
+        document.getElementById('emailjs-key').value = config.publicKey;
+        document.getElementById('emailjs-service').value = config.serviceId;
+        document.getElementById('emailjs-template').value = config.templateId;
+        
+        const card = document.getElementById('card-notificacoes');
+        if (card && ('Notification' in window && Notification.permission === 'granted')) {
+            card.style.display = 'none';
+        }
+    }
+    
+    checkNotificacoes();
     render();
 }
 
 function saveData() {
     pricesNotes = document.getElementById('pricesNotes').value;
-    localStorage.setItem('freelasDataV5', JSON.stringify({ freelas, pricesNotes }));
+    localStorage.setItem('freelasDataV6', JSON.stringify({ freelas, pricesNotes }));
+}
+
+function checkNotificacoes() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+    
+    const hoje = new Date();
+    const configEmail = localStorage.getItem('configEmailJS');
+    const config = configEmail ? JSON.parse(configEmail) : null;
+    
+    freelas.forEach(f => {
+        if (f.dataNotaEmissao) {
+            const dataNota = new Date(f.dataNotaEmissao);
+            const diasRestantes = Math.ceil((dataNota - hoje) / (1000 * 60 * 60 * 24));
+            
+            if (diasRestantes >= 0 && diasRestantes <= 7 && diasRestantes > 0) {
+                const ultimaNotificacao = localStorage.getItem(`notificacao-${f.id}`);
+                const hoje_str = new Date().toISOString().split('T')[0];
+                
+                if (ultimaNotificacao !== hoje_str) {
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification(`⚠️ Nota de ${f.cliente}`, {
+                            body: `Faltam ${diasRestantes} dias para emitir a nota! (${new Date(f.dataNotaEmissao).toLocaleDateString('pt-BR')})`,
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📄</text></svg>',
+                            tag: `nota-${f.id}`,
+                            requireInteraction: true
+                        });
+                    }
+                    
+                    if (config && config.publicKey && config.serviceId && config.templateId) {
+                        enviarEmailNotificacao(f, diasRestantes, config);
+                    }
+                    
+                    localStorage.setItem(`notificacao-${f.id}`, hoje_str);
+                }
+            }
+        }
+    });
+}
+
+function enviarEmailNotificacao(frela, diasRestantes, config) {
+    try {
+        emailjs.init(config.publicKey);
+        
+        emailjs.send(config.serviceId, config.templateId, {
+            to_email: config.seuEmail,
+            cliente_nome: frela.cliente,
+            dias_restantes: diasRestantes,
+            data_nota: new Date(frela.dataNotaEmissao).toLocaleDateString('pt-BR'),
+            tipo_trabalho: frela.tipoJob,
+            valor: frela.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})
+        }).then(() => {
+            console.log('✓ Email enviado com sucesso!');
+        }).catch((error) => {
+            console.error('Erro ao enviar email:', error);
+        });
+    } catch (error) {
+        console.error('Erro:', error);
+    }
+}
+
+function isDataNotaProxima(data) {
+    const hoje = new Date();
+    const dataNota = new Date(data);
+    const diasRestantes = Math.ceil((dataNota - hoje) / (1000 * 60 * 60 * 24));
+    return diasRestantes >= 0 && diasRestantes <= 7;
 }
 
 function mudarAba(aba) {
@@ -219,8 +415,10 @@ function addFreela() {
         dataEntrega,
         pago: false,
         notaEmitida: false,
+        dataNotaEmissao: null,
         recorrente,
         arquivado: false,
+        pagamentosMensais: [],
         criadoEm: agora,
         historico: [
             {
@@ -242,24 +440,47 @@ function addFreela() {
     render();
 }
 
-function arquivarFreela(id) {
+function abrirNotaModal(id) {
+    frelaNota = id;
     const frela = freelas.find(f => f.id === id);
-    if (frela) {
-        frela.arquivado = !frela.arquivado;
-        
-        const agora = new Date().toISOString();
-        const novaVersao = frela.historico.length + 1;
-        
-        frela.historico.push({
-            versao: novaVersao,
-            data: agora,
-            acao: frela.arquivado ? 'Arquivado' : 'Desarquivado',
-            detalhes: frela.arquivado ? '📦 Freela arquivado' : '📌 Freela desarquivado'
-        });
-        
-        saveData();
-        render();
+    document.getElementById('data-nota').value = frela.dataNotaEmissao || '';
+    document.getElementById('modal-nota').classList.remove('hidden');
+}
+
+function fecharNotaModal() {
+    document.getElementById('modal-nota').classList.add('hidden');
+    frelaNota = null;
+}
+
+function salvarDataNota() {
+    if (!frelaNota) return;
+    
+    const frela = freelas.find(f => f.id === frelaNota);
+    if (!frela) return;
+    
+    const data = document.getElementById('data-nota').value;
+    
+    if (!data) {
+        alert('Escolha uma data!');
+        return;
     }
+    
+    frela.dataNotaEmissao = data;
+    
+    const agora = new Date().toISOString();
+    const novaVersao = frela.historico.length + 1;
+    
+    frela.historico.push({
+        versao: novaVersao,
+        data: agora,
+        acao: 'Data Nota Agendada',
+        detalhes: `📅 Emissão agendada para ${new Date(data).toLocaleDateString('pt-BR')}`
+    });
+    
+    saveData();
+    render();
+    fecharNotaModal();
+    checkNotificacoes();
 }
 
 function abrirAlteracoes(id) {
@@ -306,7 +527,6 @@ function salvarAlteracao() {
 function togglePago(id) {
     const frela = freelas.find(f => f.id === id);
     if (frela) {
-        // Se é recorrente, adiciona ao histórico de pagamentos mensais
         if (frela.recorrente) {
             if (!frela.pagamentosMensais) {
                 frela.pagamentosMensais = [];
@@ -315,14 +535,11 @@ function togglePago(id) {
             const agora = new Date();
             const mesAno = `${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()}`;
             
-            // Verifica se já existe pagamento pra este mês
             const pagamentoExistente = frela.pagamentosMensais.find(p => p.mesAno === mesAno);
             
             if (pagamentoExistente) {
-                // Remove o pagamento do mês
                 frela.pagamentosMensais = frela.pagamentosMensais.filter(p => p.mesAno !== mesAno);
             } else {
-                // Adiciona novo pagamento
                 frela.pagamentosMensais.push({
                     mesAno: mesAno,
                     data: agora.toISOString(),
@@ -339,7 +556,6 @@ function togglePago(id) {
                 detalhes: pagamentoExistente ? `❌ Pagamento de ${mesAno} removido` : `✓ Pagamento de ${mesAno} registrado - R$ ${frela.preco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
             });
         } else {
-            // Para não-recorrentes, funciona normal
             frela.pago = !frela.pago;
             
             const agora = new Date().toISOString();
@@ -352,26 +568,6 @@ function togglePago(id) {
                 detalhes: frela.pago ? '💰 Pagamento confirmado' : '⏳ Aguardando pagamento'
             });
         }
-        
-        saveData();
-        render();
-    }
-}
-
-function toggleNota(id) {
-    const frela = freelas.find(f => f.id === id);
-    if (frela) {
-        frela.notaEmitida = !frela.notaEmitida;
-        
-        const agora = new Date().toISOString();
-        const novaVersao = frela.historico.length + 1;
-        
-        frela.historico.push({
-            versao: novaVersao,
-            data: agora,
-            acao: frela.notaEmitida ? 'Nota Emitida' : 'Nota Removida',
-            detalhes: frela.notaEmitida ? '📄 Nota fiscal emitida' : '📄 Nota removida'
-        });
         
         saveData();
         render();
@@ -412,6 +608,26 @@ function updateFreela(id, field, value) {
             data: agora,
             acao: 'Alteração',
             detalhes: descricao
+        });
+        
+        saveData();
+        render();
+    }
+}
+
+function arquivarFreela(id) {
+    const frela = freelas.find(f => f.id === id);
+    if (frela) {
+        frela.arquivado = !frela.arquivado;
+        
+        const agora = new Date().toISOString();
+        const novaVersao = frela.historico.length + 1;
+        
+        frela.historico.push({
+            versao: novaVersao,
+            data: agora,
+            acao: frela.arquivado ? 'Arquivado' : 'Desarquivado',
+            detalhes: frela.arquivado ? '📦 Freela arquivado' : '📌 Freela desarquivado'
         });
         
         saveData();
@@ -513,7 +729,6 @@ function render() {
     const totalValor = freelas.filter(f => !f.arquivado).reduce((acc, f) => acc + f.preco, 0);
     const totalPago = freelas.filter(f => !f.arquivado && f.pago).reduce((acc, f) => acc + f.preco, 0);
     const totalPendente = totalValor - totalPago;
-    const notasEmitidas = freelas.filter(f => !f.arquivado && f.notaEmitida).length;
 
     document.getElementById('statsContainer').innerHTML = `
         <div class="bg-black border border-gray-800 rounded-2xl p-6">
@@ -538,7 +753,7 @@ function render() {
     if (frelasParaMostrar.length === 0) {
         container.innerHTML = `<div class="text-center py-16 bg-gray-950 rounded-2xl border-2 border-dashed border-gray-800"><p class="text-gray-500 text-lg font-bold">Nenhum freela nesta seção</p></div>`;
     } else {
-        container.innerHTML = frelasParaMostrar.map((frela, idx) => `
+        container.innerHTML = frelasParaMostrar.map((frela) => `
             <div class="bg-black border border-gray-800 rounded-2xl overflow-hidden">
                 <div class="p-6">
                     <div class="grid grid-cols-1 lg:grid-cols-6 gap-4 items-start">
@@ -566,11 +781,11 @@ function render() {
                                 ${frela.recorrente ? (frela.pagamentosMensais && frela.pagamentosMensais.length > 0 ? `${frela.pagamentosMensais.length} Pago` : 'Marcar Pago') : (frela.pago ? 'Pago' : 'Pendente')}
                             </button>
 
-                            <button onclick="toggleNota(${frela.id})" class="flex items-center gap-1 px-4 py-2 rounded-lg transition font-bold text-sm ${frela.notaEmitida ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-gray-900 text-gray-500 border border-gray-800'}">
+                            <button onclick="abrirNotaModal(${frela.id})" class="flex items-center gap-1 px-4 py-2 rounded-lg transition font-bold text-sm ${frela.dataNotaEmissao ? (isDataNotaProxima(frela.dataNotaEmissao) ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50') : 'bg-gray-900 text-gray-500 border border-gray-800'}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
-                                ${frela.notaEmitida ? 'Nota OK' : 'Nota'}
+                                ${frela.dataNotaEmissao ? (isDataNotaProxima(frela.dataNotaEmissao) ? '⚠️ Próxima' : '✓ Agendada') : 'Agendar Nota'}
                             </button>
 
                             <button onclick="abrirAlteracoes(${frela.id})" class="p-2 bg-orange-500/10 text-orange-400 rounded-lg hover:bg-orange-500/20 transition border border-orange-500/30" title="Adicionar alteração">
@@ -589,14 +804,6 @@ function render() {
                                 <button onclick="arquivarFreela(${frela.id})" class="p-2 bg-yellow-500/10 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition border border-yellow-500/30" title="Arquivar">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                    </svg>
-                                </button>
-                            ` : ''}
-
-                            ${frela.arquivado ? `
-                                <button onclick="arquivarFreela(${frela.id})" class="p-2 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500/20 transition border border-green-500/30" title="Desarquivar">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                                     </svg>
                                 </button>
                             ` : ''}
@@ -620,7 +827,7 @@ function render() {
                     ${frela.recorrente && frela.pagamentosMensais && frela.pagamentosMensais.length > 0 ? `
                         <h3 class="text-sm font-bold text-green-400 mb-4">💳 Pagamentos Mensais</h3>
                         <div class="space-y-2 mb-6 pb-6 border-b border-gray-700">
-                            ${frela.pagamentosMensais.map((pag, idx) => `
+                            ${frela.pagamentosMensais.map((pag) => `
                                 <div class="bg-black border border-gray-800 rounded-lg p-2 flex items-center justify-between">
                                     <span class="text-sm font-bold text-gray-300">${pag.mesAno}</span>
                                     <span class="text-sm text-green-400">R$ ${pag.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
@@ -629,9 +836,16 @@ function render() {
                         </div>
                     ` : ''}
                     
+                    ${frela.dataNotaEmissao ? `
+                        <div class="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <p class="text-xs text-blue-400 font-bold mb-1">📅 Data Agendada para Nota:</p>
+                            <p class="text-sm text-blue-300">${new Date(frela.dataNotaEmissao).toLocaleDateString('pt-BR')} ${isDataNotaProxima(frela.dataNotaEmissao) ? '⚠️ (Próxima!)' : ''}</p>
+                        </div>
+                    ` : ''}
+                    
                     <h3 class="text-sm font-bold text-blue-400 mb-4">📜 Histórico de Alterações</h3>
                     <div class="space-y-3 max-h-96 overflow-y-auto">
-                        ${frela.historico.map((h, hIdx) => `
+                        ${frela.historico.map((h) => `
                             <div class="bg-black border border-gray-800 rounded-lg p-3">
                                 <div class="flex items-start justify-between mb-2">
                                     <div>
