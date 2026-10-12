@@ -17,3 +17,11 @@ main{overflow:clip}.hero{min-height:100svh;max-width:1400px;margin:auto;padding:
 .js .reveal{opacity:0;transform:translateY(35px)}
 .js .reveal.is-visible{opacity:1;transform:none}
 @media(max-width:700px){.hero h1{font-size:clamp(2.9rem,13vw,3.7rem);letter-spacing:-.065em}.hero-intro{max-width:100%}.header-cta{font-size:0}.header-cta:after{content:"Contato";font-size:.75rem}}
+.header-tools{justify-self:end;display:flex;align-items:center;gap:.65rem}
+.language-switcher{display:flex;align-items:center;padding:.25rem;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.06)}
+.language-switcher button{min-width:30px;height:30px;padding:0;border:0;border-radius:50%;background:transparent;color:rgba(255,255,255,.62);font-size:.62rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .2s,color .2s}
+.language-switcher button:hover{color:#fff}
+.language-switcher button[aria-pressed="true"]{background:var(--acid);color:var(--ink)}
+@media(max-width:700px){.header-cta{display:none}.header-cta:after{content:none}.header-tools{gap:.25rem}.language-switcher button{min-width:28px;height:28px}}
+.button [data-i18n]{display:inline;width:auto;height:auto;border-radius:0;background:transparent;color:inherit}
+@media(max-width:700px){.hero h1{font-size:clamp(2.55rem,11.5vw,3.35rem)}}
